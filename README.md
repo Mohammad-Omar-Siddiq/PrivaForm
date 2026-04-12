@@ -4,10 +4,18 @@ A simple, free, and fully offline desktop tool to convert TIFF files (including 
 
 ---
 
-## Why this exists
+## Why choose this over online tools?
 
-Most online TIFF to PDF converters upload your file to a server. For confidential or sensitive documents, that's a risk. This tool runs **100% locally** on your PC — nothing is sent anywhere.
+Online converters like Smallpdf, ILovePDF, and similar tools work by **uploading your file to their servers**. For most casual use that's fine — but if your document is:
 
+- A legal or court document
+- A property or land record
+- A medical or financial file
+- Any personally identifiable or sensitive document
+
+...then uploading it to a random third-party server is a real risk. You have no way of knowing how long they store it, who has access to it, or whether it is truly deleted after conversion.
+
+**This tool runs 100% on your own machine.** Your file never leaves your PC. No internet connection is used during conversion. No accounts, no uploads, no servers — just a simple local tool that does one job cleanly and privately.
 ---
 
 ## Features
