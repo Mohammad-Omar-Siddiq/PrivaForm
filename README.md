@@ -63,4 +63,6 @@ python newconvert.py
 
 ## License
 
-MIT License — free to use, modify, and distribute.
+Custom MIT + Commons Clause — free for personal, academic, and non-commercial use.
+Commercial use by companies requires written permission from the author.
+See [LICENSE](LICENSE) for full details.
