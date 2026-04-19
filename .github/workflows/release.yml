@@ -10,27 +10,54 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v3
-      
+
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.13'
-      
+
       - name: Install dependencies
-        run: |
-          pip install pillow img2pdf pyinstaller
-      
+        run: pip install pillow img2pdf pyinstaller
+
       - name: Build executable
-        run: |
-          pyinstaller --onefile --windowed --icon=icon.ico newconvert.py -o dist
-      
+        run: pyinstaller --onefile --windowed --icon=icon.ico --distpath dist --name PrivaForm newconvert.py
+
       - name: Generate SHA-256 checksum
-        run: |
-          certutil -hashfile dist/newconvert.exe SHA256 > dist/newconvert.exe.sha256
-      
+        run: certutil -hashfile dist/PrivaForm.exe SHA256 > dist/PrivaForm.exe.sha256
+
+      - name: Upload artifact for VT scan
+        uses: actions/upload-artifact@v4
+        with:
+          name: PrivaForm-exe
+          path: dist/PrivaForm.exe
+
       - name: Create Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           files: |
-            dist/newconvert.exe
-            dist/newconvert.exe.sha256
+            dist/PrivaForm.exe
+            dist/PrivaForm.exe.sha256
+
+  virustotal-scan:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download built .exe
+        uses: actions/download-artifact@v4
+        with:
+          name: PrivaForm-exe
+
+      - name: Upload to VirusTotal
+        id: vt
+        uses: crazy-max/ghaction-virustotal@v4
+        with:
+          vt_api_key: ${{ secrets.VIRUSTOTAL_API_KEY }}
+          files: PrivaForm.exe
+
+      - name: Add VT result to release notes
+        uses: softprops/action-gh-release@v2
+        with:
+          append_body: true
+          body: |
+            ## 🛡️ VirusTotal Scan
+            ${{ steps.vt.outputs.analysis }}
