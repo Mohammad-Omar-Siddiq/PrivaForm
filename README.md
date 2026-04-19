@@ -1,4 +1,4 @@
-# TIFF to PDF Converter
+# PrivaForm
 
 A simple, free, and fully offline desktop tool to convert TIFF files (including multi-page TIFFs) into a single PDF — with a clean GUI, no subscriptions, and no data leaving your machine.
 
@@ -33,7 +33,7 @@ Online converters like Smallpdf, ILovePDF, and similar tools work by **uploading
 
 ### Option A — Just use the exe (recommended)
 
-1. Download `TIFF to PDF Converter.exe` from the `dist` folder
+1. Download `PrivaForm.exe` from the `dist` folder
 2. Double click it
 3. Browse and select your TIFF file
 4. Enter your desired output PDF name
