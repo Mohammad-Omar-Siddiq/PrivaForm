@@ -19,10 +19,13 @@ jobs:
         include:
           - os: windows-latest
             artifact_name: PrivaForm.exe
+            asset_name: PrivaForm-Windows.exe
           - os: macos-latest
             artifact_name: PrivaForm
+            asset_name: PrivaForm-macOS
           - os: ubuntu-latest
             artifact_name: PrivaForm
+            asset_name: PrivaForm-Linux
     steps:
       - uses: actions/checkout@v4
 
@@ -50,6 +53,18 @@ jobs:
         if: runner.os != 'Windows'
         run: sha256sum dist/PrivaForm > dist/PrivaForm.sha256
 
+      - name: Rename artifacts (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          mv dist/PrivaForm dist/PrivaForm-macOS
+          mv dist/PrivaForm.sha256 dist/PrivaForm-macOS.sha256
+
+      - name: Rename artifacts (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          mv dist/PrivaForm dist/PrivaForm-Linux
+          mv dist/PrivaForm.sha256 dist/PrivaForm-Linux.sha256
+
       - name: Upload Windows artifact for VT scan
         if: runner.os == 'Windows'
         uses: actions/upload-artifact@v5
@@ -62,6 +77,7 @@ jobs:
         with:
           files: |
             dist/PrivaForm*
+            dist/*.sha256
 
   virustotal-scan:
     needs: build
