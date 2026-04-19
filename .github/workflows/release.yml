@@ -50,6 +50,13 @@ jobs:
         if: runner.os != 'Windows'
         run: sha256sum dist/PrivaForm > dist/PrivaForm.sha256
 
+      - name: Upload Windows artifact for VT scan
+        if: runner.os == 'Windows'
+        uses: actions/upload-artifact@v5
+        with:
+          name: PrivaForm-Windows-exe
+          path: dist/PrivaForm.exe
+
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
@@ -66,7 +73,6 @@ jobs:
         uses: actions/download-artifact@v5
         with:
           name: PrivaForm-Windows-exe
-          path: ./
 
       - name: Upload to VirusTotal
         id: vt
