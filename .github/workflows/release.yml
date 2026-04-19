@@ -100,6 +100,7 @@ jobs:
       - name: Add VT result to release notes
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ github.ref_name }}
           append_body: true
           body: |
             ## 🛡️ VirusTotal Scan
