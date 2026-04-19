@@ -1,0 +1,17 @@
+# Python stuff
+__pycache__/
+*.py[cod]
+venv/
+
+# THE PRIVACY SHIELD - Never upload documents
+*.tiff
+*.tif
+*.pdf
+*.jpg
+*.jpeg
+*.png
+
+# Build files
+dist/
+build/
+*.spec
