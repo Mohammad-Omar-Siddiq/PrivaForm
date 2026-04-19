@@ -78,7 +78,7 @@ jobs:
           files: |
             dist/PrivaForm*
             dist/*.sha256
-          overwrite: true
+          append_body: true
 
   virustotal-scan:
     needs: build
@@ -103,7 +103,6 @@ jobs:
         with:
           tag_name: ${{ github.ref_name }}
           append_body: true
-          overwrite: false
           body: |
             ## 🛡️ VirusTotal Scan
             ${{ steps.vt.outputs.analysis }}
