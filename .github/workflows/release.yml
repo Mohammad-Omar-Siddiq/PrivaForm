@@ -1,0 +1,36 @@
+name: Release Build
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.13'
+      
+      - name: Install dependencies
+        run: |
+          pip install pillow img2pdf pyinstaller
+      
+      - name: Build executable
+        run: |
+          pyinstaller --onefile --windowed --icon=icon.ico newconvert.py -o dist
+      
+      - name: Generate SHA-256 checksum
+        run: |
+          certutil -hashfile dist/newconvert.exe SHA256 > dist/newconvert.exe.sha256
+      
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            dist/newconvert.exe
+            dist/newconvert.exe.sha256

@@ -76,13 +76,13 @@ def browse():
 
 # --- UI ---
 root = tk.Tk()
-root.title("TIFF to PDF Converter")
+root.title("PrivaForm")
 root.geometry("600x450")
 root.resizable(False, False)
 
 pad = {'padx': 10, 'pady': 5}
 
-tk.Label(root, text="TIFF to PDF Converter", font=("Helvetica", 16, "bold")).pack(pady=15)
+tk.Label(root, text="PrivaForm", font=("Helvetica", 16, "bold")).pack(pady=15)
 
 # Input file
 frame_input = tk.Frame(root)
