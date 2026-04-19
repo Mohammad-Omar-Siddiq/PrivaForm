@@ -10,9 +10,19 @@ env:
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: ${{ matrix.os }}
     permissions:
       contents: write
+    strategy:
+      matrix:
+        os: [windows-latest, macos-latest, ubuntu-latest]
+        include:
+          - os: windows-latest
+            artifact_name: PrivaForm.exe
+          - os: macos-latest
+            artifact_name: PrivaForm
+          - os: ubuntu-latest
+            artifact_name: PrivaForm
     steps:
       - uses: actions/checkout@v4
 
@@ -24,24 +34,27 @@ jobs:
       - name: Install dependencies
         run: pip install pillow img2pdf pyinstaller
 
-      - name: Build executable
+      - name: Build executable (Windows)
+        if: runner.os == 'Windows'
         run: pyinstaller --onefile --windowed --icon=icon.ico --distpath dist --name PrivaForm convert.py
 
-      - name: Generate SHA-256 checksum
-        run: certutil -hashfile dist/PrivaForm.exe SHA256 > dist/PrivaForm.exe.sha256
+      - name: Build executable (macOS/Linux)
+        if: runner.os != 'Windows'
+        run: pyinstaller --onefile --distpath dist --name PrivaForm convert.py
 
-      - name: Upload artifact for VT scan
-        uses: actions/upload-artifact@v5
-        with:
-          name: PrivaForm-exe
-          path: dist/PrivaForm.exe
+      - name: Generate SHA-256 checksum (Windows)
+        if: runner.os == 'Windows'
+        run: certutil -hashfile dist\PrivaForm.exe SHA256 > dist\PrivaForm.exe.sha256
+
+      - name: Generate SHA-256 checksum (macOS/Linux)
+        if: runner.os != 'Windows'
+        run: sha256sum dist/PrivaForm > dist/PrivaForm.sha256
 
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            dist/PrivaForm.exe
-            dist/PrivaForm.exe.sha256
+            dist/PrivaForm*
 
   virustotal-scan:
     needs: build
@@ -49,10 +62,11 @@ jobs:
     permissions:
       contents: write
     steps:
-      - name: Download built .exe
+      - name: Download Windows exe
         uses: actions/download-artifact@v5
         with:
-          name: PrivaForm-exe
+          name: PrivaForm-Windows-exe
+          path: ./
 
       - name: Upload to VirusTotal
         id: vt
