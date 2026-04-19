@@ -106,6 +106,12 @@ root.title("PrivaForm")
 root.geometry("650x550")
 root.resizable(False, False)
 
+# Set window icon
+try:
+    root.iconbitmap('icon.ico')
+except:
+    pass  # If icon not found, use default
+
 pad = {'padx': 10, 'pady': 5}
 
 tk.Label(root, text="PrivaForm", font=("Helvetica", 16, "bold")).pack(pady=15)
@@ -141,6 +147,10 @@ tk.Label(frame_output_dir, text="Save To:", width=12, anchor='w').pack(side='lef
 entry_output_dir = tk.Entry(frame_output_dir, width=45)
 entry_output_dir.pack(side='left', padx=5)
 tk.Button(frame_output_dir, text="Browse", command=browse_output_dir).pack(side='left')
+
+# Set default output to Downloads folder
+downloads_dir = os.path.expanduser("~/Downloads")
+entry_output_dir.insert(0, downloads_dir)
 
 # Convert button
 btn_convert = tk.Button(root, text="Convert to PDF", command=convert,
