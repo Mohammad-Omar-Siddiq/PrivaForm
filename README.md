@@ -49,7 +49,7 @@ pip install Pillow img2pdf
 
 **Run:**
 ```bash
-python newconvert.py
+python convert.py
 ```
 
 ---

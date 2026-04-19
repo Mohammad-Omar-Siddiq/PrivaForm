@@ -25,7 +25,7 @@ jobs:
         run: pip install pillow img2pdf pyinstaller
 
       - name: Build executable
-        run: pyinstaller --onefile --windowed --distpath dist --name PrivaForm newconvert.py
+        run: pyinstaller --onefile --windowed --distpath dist --name PrivaForm convert.py
 
       - name: Generate SHA-256 checksum
         run: certutil -hashfile dist/PrivaForm.exe SHA256 > dist/PrivaForm.exe.sha256
