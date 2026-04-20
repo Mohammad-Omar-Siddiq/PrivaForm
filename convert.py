@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import filedialog, messagebox, scrolledtext, ttk
+from PIL import Image, ImageTk
 import threading
 import os
 from converters import TiffConverter, PngConverter, JpgConverter
@@ -42,7 +43,6 @@ def convert():
         success_count = 0
         for idx, input_path in enumerate(input_paths, 1):
             try:
-                # Get custom name or use default
                 if len(input_paths) == 1:
                     custom_name = entry_output.get().strip()
                     if custom_name:
@@ -71,7 +71,6 @@ def convert():
                 
                 log.see(tk.END)
                 
-                # Update progress
                 progress = int((idx / len(input_paths)) * 100)
                 progress_bar['value'] = progress
                 progress_label.config(text=f"{progress}%")
@@ -108,7 +107,6 @@ def browse_input():
         
         label_file_count.config(text=f"{len(selected_files)} file(s) selected")
         
-        # Auto-fill output name for single file
         if len(selected_files) == 1:
             default_name = os.path.splitext(os.path.basename(selected_files[0]))[0]
             entry_output.delete(0, tk.END)
@@ -136,7 +134,18 @@ selected_files = []
 
 pad = {'padx': 10, 'pady': 5}
 
-tk.Label(root, text="PrivaForm", font=("Helvetica", 18, "bold")).pack(pady=15)
+# Add logo
+try:
+    logo_img = Image.open('icon.png')
+    logo_img = logo_img.resize((60, 60), Image.Resampling.LANCZOS)
+    logo_photo = ImageTk.PhotoImage(logo_img)
+    logo_label = tk.Label(root, image=logo_photo)
+    logo_label.image = logo_photo
+    logo_label.pack(pady=10)
+except:
+    pass
+
+tk.Label(root, text="PrivaForm", font=("Helvetica", 18, "bold")).pack(pady=10)
 
 # Format dropdown
 frame_format = tk.Frame(root)
