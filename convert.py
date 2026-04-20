@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import filedialog, messagebox, scrolledtext
+from tkinter import filedialog, messagebox, scrolledtext, ttk
 import threading
 import os
 from converters import TiffConverter, PngConverter, JpgConverter
@@ -35,12 +35,23 @@ def convert():
 
     btn_convert.config(state='disabled')
     log.delete(1.0, tk.END)
+    progress_bar['value'] = 0
+    progress_label.config(text="0%")
 
     def run():
         success_count = 0
         for idx, input_path in enumerate(input_paths, 1):
             try:
-                output_name = os.path.splitext(os.path.basename(input_path))[0] + '.pdf'
+                # Get custom name or use default
+                if len(input_paths) == 1:
+                    custom_name = entry_output.get().strip()
+                    if custom_name:
+                        output_name = custom_name if custom_name.endswith('.pdf') else custom_name + '.pdf'
+                    else:
+                        output_name = os.path.splitext(os.path.basename(input_path))[0] + '.pdf'
+                else:
+                    output_name = os.path.splitext(os.path.basename(input_path))[0] + '.pdf'
+                
                 output_path = os.path.join(output_dir, output_name)
                 
                 log.insert(tk.END, f"[{idx}/{len(input_paths)}] Converting: {os.path.basename(input_path)}...\n")
@@ -59,11 +70,20 @@ def convert():
                     log.insert(tk.END, f"❌ Failed\n")
                 
                 log.see(tk.END)
+                
+                # Update progress
+                progress = int((idx / len(input_paths)) * 100)
+                progress_bar['value'] = progress
+                progress_label.config(text=f"{progress}%")
+                root.update_idletasks()
+                
             except Exception as e:
                 log.insert(tk.END, f"❌ Error: {e}\n")
                 log.see(tk.END)
         
         log.insert(tk.END, f"\n✅ Complete! {success_count}/{len(input_paths)} converted\n")
+        progress_bar['value'] = 100
+        progress_label.config(text="100%")
         messagebox.showinfo("Success", f"{success_count}/{len(input_paths)} file(s) converted")
         btn_convert.config(state='normal')
 
@@ -87,6 +107,12 @@ def browse_input():
             messagebox.showwarning("Warning", f"Skipped {len(paths) - len(selected_files)} invalid files")
         
         label_file_count.config(text=f"{len(selected_files)} file(s) selected")
+        
+        # Auto-fill output name for single file
+        if len(selected_files) == 1:
+            default_name = os.path.splitext(os.path.basename(selected_files[0]))[0]
+            entry_output.delete(0, tk.END)
+            entry_output.insert(0, default_name)
 
 def browse_output_dir():
     path = filedialog.askdirectory(title="Select Output Directory")
@@ -97,14 +123,20 @@ def browse_output_dir():
 # --- UI ---
 root = tk.Tk()
 root.title("PrivaForm")
-root.geometry("650x500")
+root.geometry("700x600")
 root.resizable(False, False)
+
+# Set window icon
+try:
+    root.iconbitmap('icon.ico')
+except:
+    pass
 
 selected_files = []
 
 pad = {'padx': 10, 'pady': 5}
 
-tk.Label(root, text="PrivaForm", font=("Helvetica", 16, "bold")).pack(pady=15)
+tk.Label(root, text="PrivaForm", font=("Helvetica", 18, "bold")).pack(pady=15)
 
 # Format dropdown
 frame_format = tk.Frame(root)
@@ -113,15 +145,23 @@ tk.Label(frame_format, text="Format:", width=12, anchor='w').pack(side='left')
 format_var = tk.StringVar(value='auto')
 dropdown = tk.OptionMenu(frame_format, format_var, 'auto', 'tiff', 'png', 'jpg')
 dropdown.pack(side='left', padx=5)
-tk.Label(frame_format, text="(Auto-detect or select manually)", fg="gray").pack(side='left')
+tk.Label(frame_format, text="(Auto-detect or select manually)", fg="gray", font=("Helvetica", 9)).pack(side='left')
 
 # Input files
 frame_input = tk.Frame(root)
 frame_input.pack(fill='x', **pad)
 tk.Label(frame_input, text="Input File(s):", width=12, anchor='w').pack(side='left')
 tk.Button(frame_input, text="Browse", command=browse_input).pack(side='left', padx=5)
-label_file_count = tk.Label(frame_input, text="0 file(s) selected", fg="gray")
+label_file_count = tk.Label(frame_input, text="0 file(s) selected", fg="gray", font=("Helvetica", 9))
 label_file_count.pack(side='left', padx=5)
+
+# Output name (for single file)
+frame_output_name = tk.Frame(root)
+frame_output_name.pack(fill='x', **pad)
+tk.Label(frame_output_name, text="Output Name:", width=12, anchor='w').pack(side='left')
+entry_output = tk.Entry(frame_output_name, width=50)
+entry_output.pack(side='left', padx=5)
+tk.Label(frame_output_name, text="(single file only)", fg="gray", font=("Helvetica", 9)).pack(side='left')
 
 # Output directory
 frame_output_dir = tk.Frame(root)
@@ -141,9 +181,17 @@ btn_convert = tk.Button(root, text="Convert to PDF", command=convert,
                          padx=20, pady=8)
 btn_convert.pack(pady=10)
 
+# Progress bar
+frame_progress = tk.Frame(root)
+frame_progress.pack(fill='x', **pad)
+progress_bar = ttk.Progressbar(frame_progress, length=400, mode='determinate', value=0)
+progress_bar.pack(side='left', padx=5)
+progress_label = tk.Label(frame_progress, text="0%", width=5)
+progress_label.pack(side='left', padx=5)
+
 # Log area
 tk.Label(root, text="Progress:", anchor='w').pack(fill='x', padx=10)
-log = scrolledtext.ScrolledText(root, height=14, state='normal', font=("Courier", 9))
+log = scrolledtext.ScrolledText(root, height=12, state='normal', font=("Courier", 9))
 log.pack(fill='both', padx=10, pady=5)
 
 root.mainloop()
