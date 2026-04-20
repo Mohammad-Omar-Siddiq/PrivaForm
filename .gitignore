@@ -15,6 +15,8 @@ build/
 *.jpg
 *.jpeg
 *.png
+# Exception: commit icon.png
+!/icon.png
 
 # Exception: commit test fixtures
 !/tests/fixtures/
