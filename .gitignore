@@ -8,7 +8,22 @@ dist/
 build/
 *.spec
 
-# Test artifacts (not fixtures)
+# User documents (don't commit user files)
+*.tiff
+*.tif
+*.pdf
+*.jpg
+*.jpeg
+*.png
+
+# Exception: commit test fixtures
+!/tests/fixtures/
+!/tests/fixtures/*.tiff
+!/tests/fixtures/*.tiff
+!/tests/fixtures/*.png
+!/tests/fixtures/*.jpg
+
+# Test artifacts
 tests/__pycache__/
 tests/.pytest_cache/
 .pytest_cache/
@@ -19,7 +34,3 @@ __pycache__/
 privaform.key
 privaform.crt
 privaform.pfx
-
-# User documents (don't upload actual user files)
-# But DO commit test fixtures in tests/fixtures/
-!/tests/fixtures/
