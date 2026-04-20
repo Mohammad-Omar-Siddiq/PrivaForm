@@ -3,15 +3,23 @@ __pycache__/
 *.py[cod]
 venv/
 
-# THE PRIVACY SHIELD - Never upload documents
-*.tiff
-*.tif
-*.pdf
-*.jpg
-*.jpeg
-*.png
-
 # Build files
 dist/
 build/
 *.spec
+
+# Test artifacts (not fixtures)
+tests/__pycache__/
+tests/.pytest_cache/
+.pytest_cache/
+__pycache__/
+*.pyc
+
+# Signing files
+privaform.key
+privaform.crt
+privaform.pfx
+
+# User documents (don't upload actual user files)
+# But DO commit test fixtures in tests/fixtures/
+!/tests/fixtures/
