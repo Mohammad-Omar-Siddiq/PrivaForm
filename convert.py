@@ -3,7 +3,7 @@ from tkinter import filedialog, messagebox, scrolledtext, ttk
 from PIL import Image, ImageTk
 import threading
 import os
-from converters import TiffConverter, PngConverter, JpgConverter
+from converters import TiffConverter, PngConverter, JpgConverter, WebpConverter, BmpConverter, GifConverter
 
 def get_converter(input_path, output_path, file_format, log_widget):
     """Return appropriate converter based on format"""
@@ -13,12 +13,24 @@ def get_converter(input_path, output_path, file_format, log_widget):
             return PngConverter(input_path, output_path, log_widget)
         elif ext in ['.jpg', '.jpeg']:
             return JpgConverter(input_path, output_path, log_widget)
+        elif ext in ['.webp']:
+            return WebpConverter(input_path, output_path, log_widget)
+        elif ext in ['.bmp']:
+            return BmpConverter(input_path, output_path, log_widget)
+        elif ext in ['.gif']:
+            return GifConverter(input_path, output_path, log_widget)
         else:
             return TiffConverter(input_path, output_path, log_widget)
     elif file_format == 'png':
         return PngConverter(input_path, output_path, log_widget)
     elif file_format == 'jpg':
         return JpgConverter(input_path, output_path, log_widget)
+    elif file_format == 'webp':
+        return WebpConverter(input_path, output_path, log_widget)
+    elif file_format == 'bmp':
+        return BmpConverter(input_path, output_path, log_widget)
+    elif file_format == 'gif':
+        return GifConverter(input_path, output_path, log_widget)
     else:
         return TiffConverter(input_path, output_path, log_widget)
 
@@ -91,19 +103,17 @@ def convert():
 def browse_input():
     global selected_files
     filetypes = [
-        ("All Supported", "*.tiff *.tif *.png *.jpg *.jpeg"),
+        ("All Supported", "*.tiff *.tif *.png *.jpg *.jpeg *.webp *.bmp *.gif"),
         ("TIFF Files", "*.tiff *.tif"),
         ("PNG Files", "*.png"),
         ("JPG Files", "*.jpg *.jpeg"),
-        ("All Files", "*.*")
+        ("WEBP Files", "*.webp"),
+        ("BMP Files", "*.bmp"),
+        ("GIF Files", "*.gif")
     ]
     paths = filedialog.askopenfilenames(title="Select File(s)", filetypes=filetypes)
     if paths:
-        valid_exts = ['.tiff', '.tif', '.png', '.jpg', '.jpeg']
-        selected_files = [p for p in paths if os.path.splitext(p)[1].lower() in valid_exts]
-        
-        if len(selected_files) < len(paths):
-            messagebox.showwarning("Warning", f"Skipped {len(paths) - len(selected_files)} invalid files")
+        selected_files = list(paths)  # All selected are already supported
         
         label_file_count.config(text=f"{len(selected_files)} file(s) selected")
         
@@ -152,7 +162,7 @@ frame_format = tk.Frame(root)
 frame_format.pack(fill='x', **pad)
 tk.Label(frame_format, text="Format:", width=12, anchor='w').pack(side='left')
 format_var = tk.StringVar(value='auto')
-dropdown = tk.OptionMenu(frame_format, format_var, 'auto', 'tiff', 'png', 'jpg')
+dropdown = tk.OptionMenu(frame_format, format_var, 'auto', 'tiff', 'png', 'jpg', 'webp', 'bmp', 'gif')
 dropdown.pack(side='left', padx=5)
 tk.Label(frame_format, text="(Auto-detect or select manually)", fg="gray", font=("Helvetica", 9)).pack(side='left')
 
