@@ -9,7 +9,78 @@ env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
+  generate-release-notes:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      release_body: ${{ steps.generate_notes.outputs.release_body }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Generate Release Notes
+        id: generate_notes
+        run: |
+          # Get the current tag
+          CURRENT_TAG="${{ github.ref_name }}"
+          
+          # Get the previous tag (most recent tag before current)
+          PREVIOUS_TAG=$(git tag --sort=-version:refname --merged $CURRENT_TAG | grep -v "^$CURRENT_TAG$" | head -1)
+          
+          # If no previous tag exists, get all commits
+          if [ -z "$PREVIOUS_TAG" ]; then
+            COMMITS=$(git log --pretty=format:"%h %s")
+          else
+            COMMITS=$(git log $PREVIOUS_TAG..$CURRENT_TAG --pretty=format:"%h %s")
+          fi
+          
+          # Initialize arrays for different categories
+          FEATURES=""
+          BUGFIXES=""
+          IMPROVEMENTS=""
+          OTHER=""
+          
+          # Parse commits and categorize them
+          while IFS= read -r commit; do
+            if [[ $commit == *"feat:"* ]] || [[ $commit == *"feature:"* ]]; then
+              FEATURES+="- ${commit#* }"$'\n'
+            elif [[ $commit == *"fix:"* ]] || [[ $commit == *"bugfix:"* ]]; then
+              BUGFIXES+="- ${commit#* }"$'\n'
+            elif [[ $commit == *"improvement:"* ]] || [[ $commit == *"improve:"* ]]; then
+              IMPROVEMENTS+="- ${commit#* }"$'\n'
+            else
+              OTHER+="- ${commit#* }"$'\n'
+            fi
+          done <<< "$COMMITS"
+          
+          # Build release notes
+          RELEASE_BODY="## 📋 Release Notes for $CURRENT_TAG"$'\n\n'
+          
+          if [ -n "$FEATURES" ]; then
+            RELEASE_BODY+="### ✨ Features"$'\n'"$FEATURES"$'\n'
+          fi
+          
+          if [ -n "$BUGFIXES" ]; then
+            RELEASE_BODY+="### 🐛 Bug Fixes"$'\n'"$BUGFIXES"$'\n'
+          fi
+          
+          if [ -n "$IMPROVEMENTS" ]; then
+            RELEASE_BODY+="### 🚀 Improvements"$'\n'"$IMPROVEMENTS"$'\n'
+          fi
+          
+          if [ -n "$OTHER" ]; then
+            RELEASE_BODY+="### 📝 Other Changes"$'\n'"$OTHER"$'\n'
+          fi
+          
+          # Output as multiline string
+          echo "release_body<<EOF" >> $GITHUB_OUTPUT
+          echo "$RELEASE_BODY" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
   build:
+    needs: generate-release-notes
     runs-on: ${{ matrix.os }}
     permissions:
       contents: write
@@ -75,6 +146,7 @@ jobs:
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
+          body: ${{ needs.generate-release-notes.outputs.release_body }}
           files: |
             dist/PrivaForm*
             dist/*.sha256
