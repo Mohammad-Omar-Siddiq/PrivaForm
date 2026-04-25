@@ -111,7 +111,7 @@ jobs:
           python-version: '3.13'
 
       - name: Install dependencies
-        run: pip install pillow img2pdf pypdf pyinstaller
+        run: pip install pillow img2pdf pypdf pikepdf pyinstaller
 
       - name: Build executable (Windows)
         if: runner.os == 'Windows'

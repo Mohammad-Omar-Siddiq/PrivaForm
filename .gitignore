@@ -21,9 +21,12 @@ build/
 # Exception: commit test fixtures
 !/tests/fixtures/
 !/tests/fixtures/*.tiff
-!/tests/fixtures/*.tiff
 !/tests/fixtures/*.png
 !/tests/fixtures/*.jpg
+
+# NCERT Test Files
+kebo*.pdf
+Merged_NCERT.pdf
 
 # Test artifacts
 tests/__pycache__/

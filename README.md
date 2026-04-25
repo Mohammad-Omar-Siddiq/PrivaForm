@@ -50,7 +50,7 @@ Online converters like Smallpdf, ILovePDF, and similar tools work by **uploading
 
 **Requirements:**
 ```bash
-pip install Pillow img2pdf pypdf
+pip install Pillow img2pdf pypdf pikepdf
 ```
 
 **Run:**
@@ -77,6 +77,7 @@ See [SECURITY.md](SECURITY.md) for full details.
 - [Pillow](https://python-pillow.org/)
 - [img2pdf](https://gitlab.mister-muffin.de/josch/img2pdf)
 - [pypdf](https://pypdf.readthedocs.io/en/stable/)
+- [pikepdf](https://pikepdf.readthedocs.io/) (used for robust merging and repair)
 - [Tkinter](https://docs.python.org/3/library/tkinter.html) (built into Python)
 
 ---
