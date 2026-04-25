@@ -39,3 +39,6 @@ __pycache__/
 privaform.key
 privaform.crt
 privaform.pfx
+
+# Scratch scripts
+scratch/
