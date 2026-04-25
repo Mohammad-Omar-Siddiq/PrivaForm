@@ -21,7 +21,8 @@ Online converters like Smallpdf, ILovePDF, and similar tools work by **uploading
 
 ## Features
 
-- ✅ Multi-format support: TIFF, PNG, JPG → PDF
+- ✅ Multi-format support: TIFF, PNG, JPG, WEBP, BMP, GIF → PDF
+- ✅ PDF Merger: Combine multiple PDFs into one
 - ✅ Single and multi-page conversions
 - ✅ Auto-detect input format or manual selection
 - ✅ Clean GUI — no command line needed
@@ -49,7 +50,7 @@ Online converters like Smallpdf, ILovePDF, and similar tools work by **uploading
 
 **Requirements:**
 ```bash
-pip install Pillow img2pdf
+pip install Pillow img2pdf pypdf
 ```
 
 **Run:**
@@ -75,6 +76,7 @@ See [SECURITY.md](SECURITY.md) for full details.
 - [Python 3.13](https://www.python.org/)
 - [Pillow](https://python-pillow.org/)
 - [img2pdf](https://gitlab.mister-muffin.de/josch/img2pdf)
+- [pypdf](https://pypdf.readthedocs.io/en/stable/)
 - [Tkinter](https://docs.python.org/3/library/tkinter.html) (built into Python)
 
 ---

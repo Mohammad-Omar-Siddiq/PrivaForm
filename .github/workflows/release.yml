@@ -44,6 +44,11 @@ jobs:
           
           # Parse commits and categorize them
           while IFS= read -r commit; do
+            # If commit contains [skip], ignore it entirely
+            if [[ $commit == *"[skip]"* ]]; then
+              continue
+            fi
+            
             if [[ $commit == *"feat:"* ]] || [[ $commit == *"feature:"* ]]; then
               FEATURES+="- ${commit#* }"$'\n'
             elif [[ $commit == *"fix:"* ]] || [[ $commit == *"bugfix:"* ]]; then
@@ -106,7 +111,7 @@ jobs:
           python-version: '3.13'
 
       - name: Install dependencies
-        run: pip install pillow img2pdf pyinstaller
+        run: pip install pillow img2pdf pypdf pyinstaller
 
       - name: Build executable (Windows)
         if: runner.os == 'Windows'
