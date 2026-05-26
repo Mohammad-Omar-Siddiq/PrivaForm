@@ -98,4 +98,4 @@ See [LICENSE](LICENSE) for full details.
 
 ## Support
 
-Found an issue? Have a suggestion? Open an [Issue](https://github.com/Mohammad-Omar-Siddiq/PrivaForm/issues) on GitHub.
+Found an issue? Have a suggestion? Open an [Issue](https://github.com/Mohammad-Omar-Siddiq/PrivaForm/issues) on GitHub or email at omarsiddiq182010@gmail.com
