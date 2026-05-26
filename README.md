@@ -96,15 +96,6 @@ See [LICENSE](LICENSE) for full details.
 
 ---
 
-## Roadmap
-
-- [ ] Code signing via SignPath Foundation (in progress)
-- [ ] PNG/JPG multi-page batch conversion
-- [ ] OCR support
-- [ ] macOS/Linux executables
-
----
-
 ## Support
 
 Found an issue? Have a suggestion? Open an [Issue](https://github.com/Mohammad-Omar-Siddiq/PrivaForm/issues) on GitHub.
