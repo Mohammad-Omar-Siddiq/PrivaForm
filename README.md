@@ -84,7 +84,7 @@ See [SECURITY.md](SECURITY.md) for full details.
 
 ## Platform
 
-> **Windows only** for the `.exe` (via GitHub Releases). Mac/Linux users can run directly from source.
+> **Windows only** for the `.exe` (via GitHub Releases). Mac/Linux users can run directly from source or can use the files in the release.
 
 ---
 
