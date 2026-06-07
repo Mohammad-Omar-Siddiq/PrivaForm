@@ -90,12 +90,13 @@ See [SECURITY.md](SECURITY.md) for full details.
 
 ## License
 
-Custom MIT + Commons Clause — free for personal, academic, and non-commercial use.
-Commercial use by companies requires written permission from the author.
-See [LICENSE](LICENSE) for full details.
+This project is licensed under the **GNU Affero General Public License v3.0 (AGPL-3.0)**. 
+
+This means PrivaForm will always remain free, open-source, and copyleft. Any modifications or derivative works—including those hosted as a network service—must also open-source their source code under the same license.
+
+See the [LICENSE](LICENSE) file for the full legal text.
 
 ---
-
 ## Support
 
 Found an issue? Have a suggestion? Open an [Issue](https://github.com/Mohammad-Omar-Siddiq/PrivaForm/issues) on GitHub or email at omarsiddiq182010@gmail.com
