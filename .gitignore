@@ -42,3 +42,6 @@ privaform.pfx
 
 # Scratch scripts
 scratch/
+
+# Local AI handoff notes
+context.md

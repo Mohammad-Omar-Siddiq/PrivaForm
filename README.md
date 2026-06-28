@@ -23,6 +23,7 @@ Online converters like Smallpdf, ILovePDF, and similar tools work by **uploading
 
 - ✅ Multi-format support: TIFF, PNG, JPG, WEBP, BMP, GIF → PDF
 - ✅ PDF Merger: Combine multiple PDFs into one
+- ✅ PDF Compression: Optimize existing PDFs locally
 - ✅ Single and multi-page conversions
 - ✅ Auto-detect input format or manual selection
 - ✅ Clean GUI — no command line needed
@@ -55,7 +56,7 @@ pip install Pillow img2pdf pypdf pikepdf
 
 **Run:**
 ```bash
-python convert.py
+python main.py
 ```
 
 ---

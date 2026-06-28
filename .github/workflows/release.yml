@@ -115,11 +115,11 @@ jobs:
 
       - name: Build executable (Windows)
         if: runner.os == 'Windows'
-        run: pyinstaller --onefile --windowed --icon=icon.ico --distpath dist --name PrivaForm convert.py
+        run: pyinstaller --onefile --windowed --icon=icon.ico --distpath dist --name PrivaForm main.py
 
       - name: Build executable (macOS/Linux)
         if: runner.os != 'Windows'
-        run: pyinstaller --onefile --distpath dist --name PrivaForm convert.py
+        run: pyinstaller --onefile --distpath dist --name PrivaForm main.py
 
       - name: Generate SHA-256 checksum (Windows)
         if: runner.os == 'Windows'
