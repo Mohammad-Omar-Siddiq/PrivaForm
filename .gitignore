@@ -1,24 +1,26 @@
-# Python stuff
+# Python compiler cache and virtual environments
 __pycache__/
 *.py[cod]
+*$py.class
 venv/
+.venv/
+.env
 
-# Build files
+# Build and packaging
 dist/
 build/
 *.spec
+*.egg-info/
 
-# User documents (don't commit user files)
+# User document formats (prevent committing local tests/outputs)
 *.tiff
 *.tif
 *.pdf
 *.jpg
 *.jpeg
 *.png
-# Exception: commit icon.png
+# Exceptions: keep project icon and test fixtures
 !/icon.png
-
-# Exception: commit test fixtures
 !/tests/fixtures/
 !/tests/fixtures/*.tiff
 !/tests/fixtures/*.png
@@ -28,20 +30,17 @@ build/
 kebo*.pdf
 Merged_NCERT.pdf
 
-# Test artifacts
-tests/__pycache__/
-tests/.pytest_cache/
+# Test caches and artifacts
 .pytest_cache/
-__pycache__/
-*.pyc
+tests/.pytest_cache/
 
-# Signing files
+# Code signing files
 privaform.key
 privaform.crt
 privaform.pfx
 
-# Scratch scripts
+# Temporary scratch space
 scratch/
 
-# Local AI handoff notes
+# Local AI notes
 context.md
