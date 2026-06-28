@@ -17,14 +17,15 @@
 from .base import BaseConverter
 from PIL import Image
 import img2pdf
-import io
+from .image_utils import image_to_pdf_bytes
 
 class JpgConverter(BaseConverter):
     """Convert JPG files to PDF"""
     
-    def __init__(self, input_file: str, output_file: str, log_widget=None):
+    def __init__(self, input_file: str, output_file: str, log_widget=None, image_quality: int = 100):
         super().__init__(input_file, output_file)
         self.log_widget = log_widget
+        self.image_quality = image_quality
     
     def log(self, message: str):
         """Log message to UI if widget exists"""
@@ -41,13 +42,7 @@ class JpgConverter(BaseConverter):
         try:
             img = Image.open(self.input_file)
             
-            # Convert to RGB if needed
-            if img.mode != 'RGB':
-                img = img.convert('RGB')
-            
-            buf = io.BytesIO()
-            img.save(buf, format='JPEG')
-            image_bytes = [buf.getvalue()]
+            image_bytes = [image_to_pdf_bytes(img, 'JPEG', self.image_quality)]
             
             self.log("Processing JPG...")
             

@@ -19,43 +19,43 @@ from tkinter import filedialog, messagebox, scrolledtext, ttk
 from PIL import Image, ImageTk
 import threading
 import os
-from converters import TiffConverter, PngConverter, JpgConverter, WebpConverter, BmpConverter, GifConverter, PdfMerger
+from converters import TiffConverter, PngConverter, JpgConverter, WebpConverter, BmpConverter, GifConverter, PdfMerger, PdfCompressor
 
-def get_converter(input_path, output_path, file_format, log_widget):
+def get_converter(input_path, output_path, file_format, log_widget, image_quality=100):
     """Return appropriate converter based on format"""
     if file_format == 'auto':
         ext = os.path.splitext(input_path)[1].lower()
         if ext in ['.png']:
-            return PngConverter(input_path, output_path, log_widget)
+            return PngConverter(input_path, output_path, log_widget, image_quality)
         elif ext in ['.jpg', '.jpeg']:
-            return JpgConverter(input_path, output_path, log_widget)
+            return JpgConverter(input_path, output_path, log_widget, image_quality)
         elif ext in ['.webp']:
-            return WebpConverter(input_path, output_path, log_widget)
+            return WebpConverter(input_path, output_path, log_widget, image_quality)
         elif ext in ['.bmp']:
-            return BmpConverter(input_path, output_path, log_widget)
+            return BmpConverter(input_path, output_path, log_widget, image_quality)
         elif ext in ['.gif']:
-            return GifConverter(input_path, output_path, log_widget)
+            return GifConverter(input_path, output_path, log_widget, image_quality)
         else:
-            return TiffConverter(input_path, output_path, log_widget)
+            return TiffConverter(input_path, output_path, log_widget, image_quality)
     elif file_format == 'png':
-        return PngConverter(input_path, output_path, log_widget)
+        return PngConverter(input_path, output_path, log_widget, image_quality)
     elif file_format == 'jpg':
-        return JpgConverter(input_path, output_path, log_widget)
+        return JpgConverter(input_path, output_path, log_widget, image_quality)
     elif file_format == 'webp':
-        return WebpConverter(input_path, output_path, log_widget)
+        return WebpConverter(input_path, output_path, log_widget, image_quality)
     elif file_format == 'bmp':
-        return BmpConverter(input_path, output_path, log_widget)
+        return BmpConverter(input_path, output_path, log_widget, image_quality)
     elif file_format == 'gif':
-        return GifConverter(input_path, output_path, log_widget)
+        return GifConverter(input_path, output_path, log_widget, image_quality)
     else:
-        return TiffConverter(input_path, output_path, log_widget)
+        return TiffConverter(input_path, output_path, log_widget, image_quality)
 
 
 class PrivaFormApp:
     def __init__(self, root):
         self.root = root
         self.root.title("PrivaForm")
-        self.root.geometry("700x700")
+        self.root.geometry("720x760")
         self.root.resizable(False, False)
 
         # Set window icon
@@ -82,6 +82,11 @@ class PrivaFormApp:
         self.tab_merger = ttk.Frame(self.notebook)
         self.notebook.add(self.tab_merger, text=" PDF Merger ")
         self._build_merger_tab()
+
+        # Tab 3: Compression
+        self.tab_compression = ttk.Frame(self.notebook)
+        self.notebook.add(self.tab_compression, text=" Compression ")
+        self._build_compression_tab()
 
     def _build_header(self):
         header_frame = tk.Frame(self.root)
@@ -136,6 +141,22 @@ class PrivaFormApp:
         downloads_dir = os.path.expanduser("~/Downloads")
         self.entry_output_dir_conv.insert(0, downloads_dir)
 
+        # Compression option
+        frame_quality = tk.Frame(self.tab_converter)
+        frame_quality.pack(fill='x', **self.pad)
+        tk.Label(frame_quality, text="Quality:", width=12, anchor='w').pack(side='left')
+        self.quality_conv_var = tk.IntVar(value=100)
+        tk.Scale(
+            frame_quality,
+            from_=1,
+            to=100,
+            orient='horizontal',
+            variable=self.quality_conv_var,
+            length=260,
+            showvalue=True
+        ).pack(side='left', padx=5)
+        tk.Label(frame_quality, text="100 keeps original quality; lower values compress images", fg="gray", font=("Helvetica", 9)).pack(side='left')
+
         # Convert button
         self.btn_convert = tk.Button(self.tab_converter, text="Convert to PDF", command=self.run_convert,
                          bg="#2196F3", fg="white", font=("Helvetica", 11, "bold"), padx=20, pady=5)
@@ -178,6 +199,7 @@ class PrivaFormApp:
         input_paths = self.selected_files_conv
         output_dir = self.entry_output_dir_conv.get().strip()
         selected_format = self.format_var.get()
+        image_quality = self.quality_conv_var.get()
 
         if not input_paths:
             messagebox.showerror("Error", "Please select input file(s).")
@@ -209,7 +231,7 @@ class PrivaFormApp:
                     self.log_conv.insert(tk.END, f"[{idx}/{len(input_paths)}] Converting: {os.path.basename(input_path)}...\n")
                     self.log_conv.see(tk.END)
                     
-                    converter = get_converter(input_path, output_path, selected_format, self.log_conv)
+                    converter = get_converter(input_path, output_path, selected_format, self.log_conv, image_quality)
                     
                     if not converter.validate_input():
                         self.log_conv.insert(tk.END, f"❌ Invalid format\n")
@@ -281,6 +303,12 @@ class PrivaFormApp:
         tk.Button(frame_output_dir, text="Browse", command=lambda: self.browse_output_dir(self.entry_output_dir_merger)).pack(side='left')
         self.entry_output_dir_merger.insert(0, os.path.expanduser("~/Downloads"))
 
+        # Optional optimization
+        frame_optimize = tk.Frame(self.tab_merger)
+        frame_optimize.pack(fill='x', **self.pad)
+        self.optimize_merge_var = tk.BooleanVar(value=False)
+        tk.Checkbutton(frame_optimize, text="Optimize merged PDF after saving", variable=self.optimize_merge_var).pack(side='left')
+
         # Merge Button
         self.btn_merge = tk.Button(self.tab_merger, text="Merge PDFs", command=self.run_merge,
                          bg="#4CAF50", fg="white", font=("Helvetica", 11, "bold"), padx=20, pady=5)
@@ -338,6 +366,10 @@ class PrivaFormApp:
         def task():
             merger = PdfMerger(input_paths, output_path, self.log_merger)
             if merger.merge():
+                if self.optimize_merge_var.get():
+                    self.log_merger.insert(tk.END, "Optimizing merged PDF...\n")
+                    compressor = PdfCompressor(output_path, output_path, self.log_merger)
+                    compressor.compress()
                 self.log_merger.insert(tk.END, f"\n✅ Complete! Saved: {output_name}\n")
                 messagebox.showinfo("Success", f"PDFs merged successfully!\nSaved to: {output_path}")
             else:
@@ -346,6 +378,91 @@ class PrivaFormApp:
             
             self.log_merger.see(tk.END)
             self.btn_merge.config(state='normal')
+
+        threading.Thread(target=task, daemon=True).start()
+
+    # ================= COMPRESSION TAB =================
+    def _build_compression_tab(self):
+        self.selected_pdf_comp = ""
+
+        frame_input = tk.Frame(self.tab_compression)
+        frame_input.pack(fill='x', **self.pad)
+        tk.Label(frame_input, text="Input PDF:", width=12, anchor='w').pack(side='left')
+        tk.Button(frame_input, text="Browse", command=self.browse_input_comp).pack(side='left', padx=5)
+        self.label_input_comp = tk.Label(frame_input, text="No file selected", fg="gray", font=("Helvetica", 9))
+        self.label_input_comp.pack(side='left', padx=5)
+
+        frame_output_name = tk.Frame(self.tab_compression)
+        frame_output_name.pack(fill='x', **self.pad)
+        tk.Label(frame_output_name, text="Output Name:", width=12, anchor='w').pack(side='left')
+        self.entry_output_comp = tk.Entry(frame_output_name, width=50)
+        self.entry_output_comp.pack(side='left', padx=5)
+
+        frame_output_dir = tk.Frame(self.tab_compression)
+        frame_output_dir.pack(fill='x', **self.pad)
+        tk.Label(frame_output_dir, text="Save To:", width=12, anchor='w').pack(side='left')
+        self.entry_output_dir_comp = tk.Entry(frame_output_dir, width=45)
+        self.entry_output_dir_comp.pack(side='left', padx=5)
+        tk.Button(frame_output_dir, text="Browse", command=lambda: self.browse_output_dir(self.entry_output_dir_comp)).pack(side='left')
+        self.entry_output_dir_comp.insert(0, os.path.expanduser("~/Downloads"))
+
+        self.btn_compress = tk.Button(
+            self.tab_compression,
+            text="Compress PDF",
+            command=self.run_compress,
+            bg="#7952B3",
+            fg="white",
+            font=("Helvetica", 11, "bold"),
+            padx=20,
+            pady=5
+        )
+        self.btn_compress.pack(pady=10)
+
+        tk.Label(self.tab_compression, text="Progress Log:", anchor='w').pack(fill='x', padx=10)
+        self.log_comp = scrolledtext.ScrolledText(self.tab_compression, height=16, state='normal', font=("Courier", 9))
+        self.log_comp.pack(fill='both', expand=True, padx=10, pady=5)
+
+    def browse_input_comp(self):
+        path = filedialog.askopenfilename(title="Select PDF", filetypes=[("PDF Files", "*.pdf")])
+        if path:
+            self.selected_pdf_comp = path
+            self.label_input_comp.config(text=os.path.basename(path))
+            default_name = os.path.splitext(os.path.basename(path))[0] + "_compressed"
+            self.entry_output_comp.delete(0, tk.END)
+            self.entry_output_comp.insert(0, default_name)
+
+    def run_compress(self):
+        input_path = self.selected_pdf_comp
+        output_dir = self.entry_output_dir_comp.get().strip()
+        custom_name = self.entry_output_comp.get().strip()
+
+        if not input_path:
+            messagebox.showerror("Error", "Please select an input PDF.")
+            return
+        if not output_dir:
+            messagebox.showerror("Error", "Please select an output directory.")
+            return
+        if not custom_name:
+            messagebox.showerror("Error", "Please provide an output name.")
+            return
+
+        output_name = custom_name if custom_name.endswith('.pdf') else custom_name + '.pdf'
+        output_path = os.path.join(output_dir, output_name)
+
+        self.btn_compress.config(state='disabled')
+        self.log_comp.delete(1.0, tk.END)
+
+        def task():
+            compressor = PdfCompressor(input_path, output_path, self.log_comp)
+            if compressor.compress():
+                self.log_comp.insert(tk.END, f"\n✅ Complete! Saved: {output_name}\n")
+                messagebox.showinfo("Success", f"PDF compressed successfully!\nSaved to: {output_path}")
+            else:
+                self.log_comp.insert(tk.END, "\n❌ Failed to compress PDF.\n")
+                messagebox.showerror("Error", "Failed to compress PDF. Check the log for details.")
+
+            self.log_comp.see(tk.END)
+            self.btn_compress.config(state='normal')
 
         threading.Thread(target=task, daemon=True).start()
 

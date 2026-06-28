@@ -17,12 +17,13 @@
 from .base import BaseConverter
 from PIL import Image
 import img2pdf
-import io
+from .image_utils import image_to_pdf_bytes
 
 class GifConverter(BaseConverter):
-    def __init__(self, input_file: str, output_file: str, log_widget=None):
+    def __init__(self, input_file: str, output_file: str, log_widget=None, image_quality: int = 100):
         super().__init__(input_file, output_file)
         self.log_widget = log_widget
+        self.image_quality = image_quality
     
     def log(self, message: str):
         if self.log_widget:
@@ -35,11 +36,7 @@ class GifConverter(BaseConverter):
     def convert(self) -> bool:
         try:
             img = Image.open(self.input_file)
-            if img.mode != 'RGB':
-                img = img.convert('RGB')
-            buf = io.BytesIO()
-            img.save(buf, format='GIF')
-            image_bytes = [buf.getvalue()]
+            image_bytes = [image_to_pdf_bytes(img, 'GIF', self.image_quality)]
             self.log("Processing GIF...")
             with open(self.output_file, 'wb') as f:
                 f.write(img2pdf.convert(image_bytes))

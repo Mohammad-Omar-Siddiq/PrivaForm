@@ -17,14 +17,15 @@
 from .base import BaseConverter
 from PIL import Image
 import img2pdf
-import io
+from .image_utils import image_to_pdf_bytes
 
 class TiffConverter(BaseConverter):
     """Convert TIFF files to PDF"""
     
-    def __init__(self, input_file: str, output_file: str, log_widget=None):
+    def __init__(self, input_file: str, output_file: str, log_widget=None, image_quality: int = 100):
         super().__init__(input_file, output_file)
         self.log_widget = log_widget
+        self.image_quality = image_quality
     
     def log(self, message: str):
         """Log message to UI if widget exists"""
@@ -46,10 +47,8 @@ class TiffConverter(BaseConverter):
             while True:
                 try:
                     img.seek(page)
-                    frame = img.copy().convert('RGB')
-                    buf = io.BytesIO()
-                    frame.save(buf, format='PNG')
-                    image_bytes.append(buf.getvalue())
+                    frame = img.copy()
+                    image_bytes.append(image_to_pdf_bytes(frame, 'PNG', self.image_quality))
                     self.log(f"Processed page {page + 1}")
                     page += 1
                 except EOFError:
