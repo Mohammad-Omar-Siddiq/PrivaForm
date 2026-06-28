@@ -11,6 +11,7 @@ dist/
 build/
 *.spec
 *.egg-info/
+PrivaForm.exe
 
 # User document formats (prevent committing local tests/outputs)
 *.tiff
